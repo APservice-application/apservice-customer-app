@@ -51,7 +51,8 @@
   overflow-y: hidden;
   margin: 0 -2px;
   padding: 2px 2px 9px;
-  scroll-snap-type: x mandatory;
+  /* ปรับแก้: เปลี่ยนจาก mandatory เป็น proximity เพื่อลดการสแนปหน้าจอโดยไม่จำเป็น */
+  scroll-snap-type: x proximity;
   scroll-padding-inline: 2px;
   overscroll-behavior-x: contain;
   touch-action: pan-x;
@@ -113,6 +114,7 @@
   object-fit: cover;
 }
 
+.featured-store-carousel-card__icon,
 .featured-store-carousel-card__icon,
 .featured-store-carousel-card__emoji {
   position: relative;
