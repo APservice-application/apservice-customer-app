@@ -130,24 +130,13 @@
     } catch (_) { section.hidden = true; }
   }
 
+  // Do not auto-scroll the sponsored rail. Programmatic smooth scrolling can
+  // cause mobile browsers/WebViews to move the page viewport back to the rail
+  // when the user is reading above or below it. Users can still swipe the rail.
   function startSponsoredAutoSlide(host) {
     if (host.__sponsoredAutoSlide) window.clearInterval(host.__sponsoredAutoSlide);
     host.__sponsoredAutoSlide = null;
-    if (host.children.length < 2 || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    let paused = false;
-    const pause = () => { paused = true; };
-    const resume = () => { paused = false; };
-    host.addEventListener('mouseenter', pause, { once: false });
-    host.addEventListener('mouseleave', resume, { once: false });
-    host.addEventListener('focusin', pause, { once: false });
-    host.addEventListener('focusout', resume, { once: false });
-    host.addEventListener('touchstart', pause, { passive: true, once: false });
-    host.addEventListener('touchend', resume, { passive: true, once: false });
-    host.__sponsoredAutoSlide = window.setInterval(() => {
-      if (paused || document.hidden) return;
-      const next = host.scrollLeft + host.clientWidth;
-      host.scrollTo({ left: next >= host.scrollWidth - 2 ? 0 : next, behavior: 'smooth' });
-    }, 5_000);
+    host.dataset.manualScrollOnly = 'true';
   }
 
   function enhance() {
