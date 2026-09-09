@@ -129,7 +129,7 @@
     const frames = [...host.querySelectorAll('[data-promotion-slide]')]; let active = 0; let timer;
     const show = next => { active = (next + frames.length) % frames.length; frames.forEach((frame, index) => { const wrapper = frame.closest('.customer-promotion-frame'); if (wrapper) wrapper.hidden = index !== active; }); host.querySelectorAll('[data-promotion-dot]').forEach((dot, index) => dot.setAttribute('aria-current', index === active ? 'true' : 'false')); };
     const stop = () => { if (timer) window.clearInterval(timer); };
-    const start = () => { stop(); if (items.length > 1) timer = window.setInterval(() => show(active + 1), 5000); };
+    const start = () => { stop(); /* Banner changes only by user interaction; never move the page automatically. */ };
     show(0);
     if (items.length > 1) { host.querySelector('[data-promotion-prev]')?.addEventListener('click', () => { show(active - 1); start(); }); host.querySelector('[data-promotion-next]')?.addEventListener('click', () => { show(active + 1); start(); }); host.querySelectorAll('[data-promotion-dot]').forEach(dot => dot.addEventListener('click', () => { show(Number(dot.dataset.promotionDot)); start(); })); host.addEventListener('mouseenter', stop); host.addEventListener('mouseleave', start); host.addEventListener('focusin', stop); host.addEventListener('focusout', start); start(); }
     host.querySelectorAll('img').forEach(image => image.addEventListener('error', () => image.remove(), { once: true }));
