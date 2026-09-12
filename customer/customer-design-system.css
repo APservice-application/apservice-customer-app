@@ -209,3 +209,11 @@ body[data-page="notifications"] #notifications .customer-notice-unread strong::b
 
 /* Stores scroll performance: defer off-screen cards until near viewport */
 #storeList .customer-store-card:nth-child(n+7){content-visibility:auto;contain-intrinsic-size:auto 320px}
+
+/* Native store list: cover art fills the visual column edge to edge */
+.customer-native-store-list .customer-store-visual{position:relative;overflow:hidden}
+.customer-native-store-list .customer-store-visual .customer-store-background{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0}
+.customer-native-store-list .customer-store-visual.has-background img:not(.customer-store-background),.customer-native-store-list .customer-store-visual.has-background>span{display:none}
+.customer-native-store-list .customer-store-visual:not(.has-background){display:grid;place-items:center}
+.customer-native-store-list .customer-store-visual:not(.has-background) img{width:64px;height:64px;border-radius:18px;object-fit:cover}
+.customer-native-store-list .customer-store-visual:not(.has-background)>span{font-size:2.2rem;line-height:1}
