@@ -5,8 +5,8 @@ const html = fs.readFileSync('customer/stores.html', 'utf8');
 const carousel = fs.readFileSync('customer/featured-stores-carousel.js', 'utf8');
 const css = fs.readFileSync('customer/featured-stores-carousel.css', 'utf8');
 
-assert.match(html, /featured-stores-carousel\.css\?v=featured-stores-v3-two-line-title/, 'หน้าร้านต้องโหลด stylesheet ของ carousel รุ่นปัจจุบัน');
-assert.match(html, /featured-stores-carousel\.js\?v=featured-stores-v2/, 'หน้าร้านต้องโหลด runtime ของ carousel รุ่นปัจจุบัน');
+assert.match(html, /featured-stores-carousel\.css\?v=featured-stores-v4-cover-image/, 'หน้าร้านต้องโหลด stylesheet ของ carousel รุ่นปัจจุบัน');
+assert.match(html, /featured-stores-carousel\.js\?v=featured-stores-v3-shared-catalog/, 'หน้าร้านต้องโหลด runtime ของ carousel รุ่นปัจจุบัน');
 assert.match(carousel, /key=eq\.customer_promotions/, 'carousel ต้องอ่าน config ที่ Admin จัดการได้');
 assert.match(carousel, /if \(mode === 'manual'\) return 'sponsored'/, 'carousel ต้องรองรับชื่อโหมด manual ตาม contract เดิม');
 assert.match(carousel, /rating\.desc/, 'โหมดอัตโนมัติต้องเริ่มจากข้อมูลคะแนนร้านจริง');

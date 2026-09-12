@@ -45,7 +45,7 @@
   };
   const hydrate = async () => {
     try {
-      const rows = await M.request('platform_configs?select=value&key=eq.customer_visuals&limit=1', { forceFresh: true, cacheKey: 'customer-visuals' });
+      const rows = await M.request('platform_configs?select=value&key=eq.customer_visuals&limit=1', { cacheTtlMs: 60_000, cacheKey: 'customer-visuals-public' });
       apply(rows?.[0]?.value);
     } catch (_) {
       // Visual configuration is optional; the existing Customer UI remains unchanged.

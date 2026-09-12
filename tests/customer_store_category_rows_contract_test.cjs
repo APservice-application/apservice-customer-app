@@ -5,8 +5,8 @@ const html = fs.readFileSync('customer/stores.html', 'utf8');
 const rows = fs.readFileSync('customer/store-category-rows.js', 'utf8');
 const css = fs.readFileSync('customer/store-category-rows.css', 'utf8');
 
-assert.match(html, /store-category-rows\.css\?v=category-rows-v3-smooth-scroll/, 'หน้าร้านต้องโหลด stylesheet แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
-assert.match(html, /store-category-rows\.js\?v=category-rows-v2-continuous-tier-sparkle/, 'หน้าร้านต้องโหลด runtime แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
+assert.match(html, /store-category-rows\.css\?v=category-rows-v4-inview-tier/, 'หน้าร้านต้องโหลด stylesheet แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
+assert.match(html, /store-category-rows\.js\?v=category-rows-v3-shared-catalog/, 'หน้าร้านต้องโหลด runtime แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
 assert.match(rows, /catalog_stores\?select=\$\{storeFields\}&order=rating\.desc&limit=300/, 'แถวหมวดต้องโหลดร้านจาก catalog จริง');
 assert.match(rows, /store_categories\?select=\*&limit=100/, 'แถวหมวดต้องอ่านรายการหมวดจริงเพื่อรองรับหมวดที่ยังไม่มีร้าน');
 assert.match(rows, /category_id \|\| store\.category_name/, 'โมดูลต้องจัดกลุ่มจากหมวดหมู่จริงของร้าน');
@@ -19,7 +19,9 @@ assert.doesNotMatch(rows, /M\.request\([^\n]*(?:platform_configs|campaigns|campa
 assert.match(rows, /href = `store\.html\?id=\$\{encodeURIComponent\(store\.id\)\}`/, 'ทั้งการ์ดต้องเชื่อมไปหน้าเมนูร้านเดิม');
 assert.match(rows, /ยังไม่มีร้านค้าที่พร้อมแสดงในหมวดนี้/, 'หมวดที่ยังไม่มีร้านต้องมี empty state ชัดเจน');
 assert.match(rows, /classList\.add\('has-tier-sparkle'\)/, 'Tier ทุกใบต้องเปิดเอฟเฟกต์ประกายต่อเนื่อง');
-assert.doesNotMatch(rows, /TIER_REMINDER_MS|scheduleTierReminder|IntersectionObserver/, 'Tier แบบต่อเนื่องไม่ควรใช้ระบบเตือนหรือ observer เพื่อเล่นเป็นช่วง ๆ');
+assert.doesNotMatch(rows, /TIER_REMINDER_MS|scheduleTierReminder/, 'Tier แบบต่อเนื่องไม่ควรใช้ระบบเตือนเพื่อเล่นเป็นช่วง ๆ');
+assert.match(rows, /is-inview/, 'Tier ต้องเล่นเอฟเฟกต์เฉพาะการ์ดที่อยู่ในจอเพื่อประหยัดแบต');
+assert.match(rows, /data-lazy-row/, 'แถวหมวดใต้จอต้องรอโหลดเมื่อผู้ใช้เลื่อนใกล้ถึง');
 assert.match(rows, /prefers-reduced-motion/, 'Tier ต้องเคารพการลดการเคลื่อนไหวของอุปกรณ์');
 assert.match(css, /\.store-category-row__rail \{\s*display: flex/, 'แต่ละหมวดต้องเป็นแถวเลื่อนแนวนอน');
 assert.match(css, /flex: 0 0 144px/, 'การ์ดในหมวดต้องคงขนาดเพื่อเลื่อนแนวนอน');

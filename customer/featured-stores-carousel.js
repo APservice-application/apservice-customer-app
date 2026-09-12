@@ -12,6 +12,12 @@
     const raw = String(value || '').trim();
     return /^(https?:|data:image\/)/i.test(raw) ? raw : '';
   };
+  const sharedCatalogStores = async () => {
+    try {
+      const rows = await (window.__AP_CUSTOMER_STORE_CATALOG__ || Promise.resolve(null));
+      return Array.isArray(rows) && rows.length ? rows : null;
+    } catch (_) { return null; }
+  };
   const normaliseMode = value => {
     const mode = String(value || '').trim().toLowerCase();
     if (mode === 'manual') return 'sponsored';
@@ -40,7 +46,7 @@
     return numeric(metadata.featured_rank) || 9999;
   };
 
-  const featuredCard = store => {
+  const featuredCard = (store, eager = false) => {
     const background = imageUrl(store.background_url);
     const icon = imageUrl(store.icon_url) || imageUrl(store.emoji);
     const emoji = icon ? '🏪' : String(store.emoji || '🏪').slice(0, 12);
@@ -50,7 +56,7 @@
     const reviewText = reviewCount > 0 ? `${reviewCount.toLocaleString('th-TH')} รีวิว` : (store.eta || 'พร้อมให้บริการ');
     const href = `store.html?id=${encodeURIComponent(store.id)}`;
 
-    return `<a class="featured-store-carousel-card" data-store-id="${escapeHtml(store.id)}" href="${escapeHtml(href)}" aria-label="ดูเมนูร้านเด่น ${escapeHtml(store.name)}"><span class="featured-store-carousel-card__visual${background ? ' has-background' : ''}">${background ? `<img class="featured-store-carousel-card__background" src="${escapeHtml(background)}" alt="" loading="lazy" decoding="async" onerror="this.closest('.featured-store-carousel-card__visual')?.classList.remove('has-background');this.remove()">` : ''}${icon ? `<img class="featured-store-carousel-card__icon" src="${escapeHtml(icon)}" alt="โลโก้ ${escapeHtml(store.name)}" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'featured-store-carousel-card__emoji',textContent:'${escapeHtml(emoji)}'}))">` : `<span class="featured-store-carousel-card__emoji">${escapeHtml(emoji)}</span>`}</span><span class="featured-store-carousel-card__copy"><strong>${escapeHtml(store.name)}</strong><span class="featured-store-carousel-card__meta"><span>${escapeHtml(ratingText)}</span><span>${escapeHtml(reviewText)}</span></span></span></a>`;
+    return `<a class="featured-store-carousel-card" data-store-id="${escapeHtml(store.id)}" href="${escapeHtml(href)}" aria-label="ดูเมนูร้านเด่น ${escapeHtml(store.name)}"><span class="featured-store-carousel-card__visual${background ? ' has-background' : ''}">${background ? `<img class="featured-store-carousel-card__background" src="${escapeHtml(background)}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async" onerror="this.closest('.featured-store-carousel-card__visual')?.classList.remove('has-background');this.remove()">` : ''}${!background && icon ? `<img class="featured-store-carousel-card__icon" src="${escapeHtml(icon)}" alt="โลโก้ ${escapeHtml(store.name)}" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'featured-store-carousel-card__emoji',textContent:'${escapeHtml(emoji)}'}))">` : ''}${!background && !icon ? `<span class="featured-store-carousel-card__emoji">${escapeHtml(emoji)}</span>` : ''}</span><span class="featured-store-carousel-card__copy"><strong>${escapeHtml(store.name)}</strong><span class="featured-store-carousel-card__meta"><span>${escapeHtml(ratingText)}</span><span>${escapeHtml(reviewText)}</span></span></span></a>`;
   };
 
   const render = (host, stores, config) => {
@@ -60,7 +66,7 @@
     }
 
     const modeLabel = config.mode === 'sponsored' ? 'ร้านค้าที่ร่วมโปรโมชัน' : config.mode === 'hybrid' ? 'ร้านแนะนำและโปรโมชัน' : 'คัดเลือกจากข้อมูลร้านจริง';
-    host.innerHTML = `<section class="featured-store-carousel" aria-labelledby="featuredStoresTitle"><div class="featured-store-carousel__heading"><div><p class="featured-store-carousel__eyebrow">FEATURED STORES</p><h2 id="featuredStoresTitle">ร้านค้าเด่น</h2><p>${escapeHtml(modeLabel)}</p></div><span class="featured-store-carousel__hint" aria-hidden="true">เลื่อนเพื่อดูเพิ่ม <b>→</b></span></div><div class="featured-store-carousel__rail" aria-label="รายชื่อร้านค้าเด่น">${stores.map(featuredCard).join('')}</div></section>`;
+    host.innerHTML = `<section class="featured-store-carousel" aria-labelledby="featuredStoresTitle"><div class="featured-store-carousel__heading"><div><p class="featured-store-carousel__eyebrow">FEATURED STORES</p><h2 id="featuredStoresTitle">ร้านค้าเด่น</h2><p>${escapeHtml(modeLabel)}</p></div><span class="featured-store-carousel__hint" aria-hidden="true">เลื่อนเพื่อดูเพิ่ม <b>→</b></span></div><div class="featured-store-carousel__rail" aria-label="รายชื่อร้านค้าเด่น">${stores.map((store, index) => featuredCard(store, index < 2)).join('')}</div></section>`;
   };
 
   async function loadConfig(M) {
@@ -73,7 +79,8 @@
   }
 
   async function loadAutomaticStores(M, limit) {
-    const rows = await M.request(`catalog_stores?select=${storeFields}&order=rating.desc&limit=100`, { cacheTtlMs: 30_000, cacheKey: 'customer-featured-stores-auto' });
+    const shared = await sharedCatalogStores();
+    const rows = shared || await M.request(`catalog_stores?select=${storeFields}&order=rating.desc&limit=100`, { cacheTtlMs: 30_000, cacheKey: 'customer-featured-stores-auto' });
     return (rows || [])
       .slice()
       .sort((left, right) => numeric(right.rating) - numeric(left.rating) || numeric(right.review_count) - numeric(left.review_count) || String(left.name || '').localeCompare(String(right.name || ''), 'th'))
@@ -83,7 +90,7 @@
   async function loadSponsoredStores(M, limit) {
     const [campaigns, links] = await Promise.all([
       M.request('campaigns?select=id,starts_at,ends_at,metadata&campaign_type=eq.store_sponsored&active=eq.true&order=starts_at.asc', { cacheTtlMs: 30_000, cacheKey: 'customer-featured-campaigns' }),
-      M.request('campaign_stores?select=campaign_id,store_id,active&active=eq.true', { cacheTtlMs: 30_000, cacheKey: 'customer-featured-campaign-stores' }),
+      M.request('campaign_stores?select=campaign_id,store_id,active&active=eq.true', { cacheTtlMs: 60_000, cacheKey: 'customer-public-campaign-stores' }),
     ]);
     const activeCampaigns = (campaigns || []).filter(isCurrentCampaign).sort((left, right) => campaignRank(left) - campaignRank(right) || Date.parse(left.starts_at || 0) - Date.parse(right.starts_at || 0));
     const campaignOrder = new Map(activeCampaigns.map((campaign, index) => [String(campaign.id), index]));
@@ -95,7 +102,8 @@
       .slice(0, limit);
 
     if (!sponsoredIds.length) return [];
-    const rows = await M.request(`catalog_stores?select=${storeFields}&id=in.(${sponsoredIds.join(',')})`, { cacheTtlMs: 30_000, cacheKey: `customer-featured-sponsored:${sponsoredIds.join(',')}` });
+    const sharedStores = await sharedCatalogStores();
+    const rows = sharedStores || await M.request(`catalog_stores?select=${storeFields}&id=in.(${sponsoredIds.join(',')})`, { cacheTtlMs: 30_000, cacheKey: `customer-featured-sponsored:${sponsoredIds.join(',')}` });
     const byId = new Map((rows || []).map(store => [String(store.id), store]));
     return sponsoredIds.map(id => byId.get(id)).filter(Boolean);
   }
