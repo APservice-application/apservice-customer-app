@@ -215,5 +215,8 @@ body[data-page="notifications"] #notifications .customer-notice-unread strong::b
 .customer-native-store-list .customer-store-visual .customer-store-background{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0}
 .customer-native-store-list .customer-store-visual.has-background img:not(.customer-store-background),.customer-native-store-list .customer-store-visual.has-background>span{display:none}
 .customer-native-store-list .customer-store-visual:not(.has-background){display:grid;place-items:center}
-.customer-native-store-list .customer-store-visual:not(.has-background) img{width:64px;height:64px;border-radius:18px;object-fit:cover}
-.customer-native-store-list .customer-store-visual:not(.has-background)>span{font-size:2.2rem;line-height:1}
+.customer-native-store-list .customer-store-visual:not(.has-background) img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0;filter:none}
+.customer-native-store-list .customer-store-visual:not(.has-background)>span{font-size:3rem;line-height:1}
+
+/* Mobile scroll performance: solid bars instead of backdrop blur repaints */
+@media (max-width:760px){body[data-page] .customer-topbar,body[data-page] .customer-nav-wrap{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff}}
