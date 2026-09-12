@@ -5,7 +5,7 @@ const html = fs.readFileSync('customer/stores.html', 'utf8');
 const rows = fs.readFileSync('customer/store-category-rows.js', 'utf8');
 const css = fs.readFileSync('customer/store-category-rows.css', 'utf8');
 
-assert.match(html, /store-category-rows\.css\?v=category-rows-v2-continuous-tier-sparkle/, 'หน้าร้านต้องโหลด stylesheet แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
+assert.match(html, /store-category-rows\.css\?v=category-rows-v3-smooth-scroll/, 'หน้าร้านต้องโหลด stylesheet แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
 assert.match(html, /store-category-rows\.js\?v=category-rows-v2-continuous-tier-sparkle/, 'หน้าร้านต้องโหลด runtime แถวร้านตามหมวดรุ่นประกายต่อเนื่อง');
 assert.match(rows, /catalog_stores\?select=\$\{storeFields\}&order=rating\.desc&limit=300/, 'แถวหมวดต้องโหลดร้านจาก catalog จริง');
 assert.match(rows, /store_categories\?select=\*&limit=100/, 'แถวหมวดต้องอ่านรายการหมวดจริงเพื่อรองรับหมวดที่ยังไม่มีร้าน');

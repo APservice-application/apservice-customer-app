@@ -206,3 +206,6 @@ body[data-page="notifications"] #notifications small{color:var(--customer-muted)
 body[data-page="notifications"] #notifications .customer-notice-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
 body[data-page="notifications"] #notifications .customer-notice-unread{border-color:var(--customer-brand);background:linear-gradient(0deg,#f0faf7,#fff);box-shadow:var(--customer-shadow-hover)}
 body[data-page="notifications"] #notifications .customer-notice-unread strong::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:var(--customer-brand)}
+
+/* Stores scroll performance: defer off-screen cards until near viewport */
+#storeList .customer-store-card:nth-child(n+7){content-visibility:auto;contain-intrinsic-size:auto 320px}

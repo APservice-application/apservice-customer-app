@@ -214,3 +214,6 @@
   .store-category-row-card { transition: none; }
   .store-category-row-card.is-tier-pressed { animation: none; }
 }
+
+/* Scroll performance: defer category rows below the first until near viewport */
+.store-category-rows .store-category-row:nth-child(n+3){content-visibility:auto;contain-intrinsic-size:auto 300px}
