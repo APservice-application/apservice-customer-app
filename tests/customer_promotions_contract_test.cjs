@@ -14,7 +14,8 @@ assert.match(customer, /customer-promotion--legacy/, 'legacy promotion ที่
 assert.match(customer, /customer-promotion-empty/, 'Customer home ต้องคงพื้นที่ AD พร้อม empty state');
 assert.match(customer, /promotionLink/, 'Customer home ต้องตรวจปลายทาง banner ก่อน render ลิงก์');
 assert.match(customer, /void promotions\(scope.request\)/, 'การโหลด AD ต้องไม่ block การแสดงร้านค้า');
-assert.match(customer, /scrollIntoView/, 'Customer carousel ต้องเลื่อนไปยังรายการจริงโดยไม่รอ network navigation');
+assert.doesNotMatch(customer, /scrollIntoView/, 'ห้ามใช้ scrollIntoView กับแบนเนอร์ เพราะดึงหน้าจอของผู้ใช้กลับมาที่แบนเนอร์แม้ผู้ใช้อ่านอยู่ด้านบนหรือด้านล่าง');
+assert.match(customer, /manualScrollOnly/, 'รางสปอนเซอร์ต้องให้ผู้ใช้ปัดเอง ห้ามเลื่อนอัตโนมัติจนดึงหน้าจอ');
 assert.match(contentRuntime, /key=eq\.customer_promotions/, 'Customer content runtime ต้องอ่าน banner จาก central platform config เดียวกับ Admin');
 assert.match(contentRuntime, /cacheKey: 'customer-promotions'/, 'Customer content runtime ต้องใช้ cache key เฉพาะเพื่อลด request storm');
 assert.match(contentRuntime, /item\?\.active !== false/, 'Customer ต้องไม่แสดง banner ที่ Admin ปิดไว้');
@@ -23,6 +24,6 @@ assert.match(contentRuntime, /data-promotion-prev/, 'Customer carousel ต้อ
 assert.match(contentRuntime, /data-promotion-next/, 'Customer carousel ต้องมีปุ่มถัดไปเมื่อมีหลาย banner');
 assert.match(contentRuntime, /data-promotion-dot/, 'Customer carousel ต้องมีตัวบอกตำแหน่งของแต่ละ banner');
 assert.match(contentRuntime, /items\.length > 1/, 'Customer ต้องเปิด controls เฉพาะเมื่อมี banner มากกว่าหนึ่งใบ');
-assert.match(contentRuntime, /setInterval/, 'Customer carousel ต้องเลื่อนอัตโนมัติเมื่อมีหลาย banner');
+assert.doesNotMatch(contentRuntime, /setInterval\(/, 'แบนเนอร์ต้องเปลี่ยนด้วยการกดของผู้ใช้เท่านั้น ห้ามสไลด์อัตโนมัติจนดึงหน้าจอ');
 
 console.log('customer promotions contract: PASS');
