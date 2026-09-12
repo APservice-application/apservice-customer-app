@@ -126,17 +126,28 @@
       if (!items.length) { section.hidden = true; return; }
       section.hidden = false; $('#sponsoredCount').textContent = `${items.length} รายการ`;
       host.innerHTML = items.map((item, index) => { const tag = item.href ? 'a' : 'div'; const href = item.href ? ` href="${h(item.href)}"` : ''; return `<${tag} class="customer-promotion"${href}><img src="${h(item.image)}" alt="${h(item.title)}" loading="${index ? 'lazy' : 'eager'}"><div class="customer-promotion__copy"><small>${h(item.badge)}</small><h2>${h(item.title)}</h2>${item.description ? `<p>${h(item.description)}</p>` : ''}${item.href ? '<span class="mpa-button mpa-button-secondary">ดูรายละเอียด</span>' : ''}</div></${tag}>`; }).join('');
-      startSponsoredAutoSlide(host);
+      startSponsoredAutoSlide(host, items.length);
     } catch (_) { section.hidden = true; }
   }
 
-  // Do not auto-scroll the sponsored rail. Programmatic smooth scrolling can
-  // cause mobile browsers/WebViews to move the page viewport back to the rail
-  // when the user is reading above or below it. Users can still swipe the rail.
-  function startSponsoredAutoSlide(host) {
+  // สไลด์รางสปอนเซอร์ทุก 5 วินาทีโดยเลื่อนเฉพาะรางด้านในเท่านั้น
+  // ห้ามใช้คำสั่งเลื่อนที่ดึงหน้าจอทั้งหน้า และหยุดแตะการเลื่อนเมื่อรางอยู่นอกจอ
+  // ผู้ใช้ยังปัดรางเองได้ตามปกติ
+  function startSponsoredAutoSlide(host, count) {
     if (host.__sponsoredAutoSlide) window.clearInterval(host.__sponsoredAutoSlide);
     host.__sponsoredAutoSlide = null;
-    host.dataset.manualScrollOnly = 'true';
+    if (!host || !(count > 1)) return;
+    let current = 0;
+    host.__sponsoredAutoSlide = window.setInterval(() => {
+      if (document.hidden || !host.isConnected) return;
+      current = (current + 1) % count;
+      const target = host.children[current];
+      if (!target) return;
+      const rail = host.getBoundingClientRect();
+      if (rail.bottom <= 0 || rail.top >= window.innerHeight) return;
+      const shift = target.getBoundingClientRect().left - rail.left;
+      if (Math.abs(shift) > 1) host.scrollTo({ left: host.scrollLeft + shift, behavior: 'smooth' });
+    }, 5000);
   }
 
   function enhance() {
