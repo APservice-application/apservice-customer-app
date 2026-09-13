@@ -2,6 +2,7 @@
   'use strict';
 
   const ORDER_STATUS = Object.freeze({
+    ADMIN_REVIEW: 'รอแอดมินตรวจสอบ',
     PAYMENT_REVIEW: 'รอตรวจสอบการชำระเงิน',
     PAYMENT_RETRY: 'ต้องแนบสลิปใหม่',
     CREDIT_REVIEW: 'รอตรวจสอบเครดิต',
@@ -16,6 +17,7 @@
   });
 
   const allowedTransitions = Object.freeze({
+    [ORDER_STATUS.ADMIN_REVIEW]: [ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.CANCELLED],
     [ORDER_STATUS.PAYMENT_REVIEW]: [ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.PAYMENT_RETRY, ORDER_STATUS.CANCELLED],
     [ORDER_STATUS.PAYMENT_RETRY]: [ORDER_STATUS.PAYMENT_REVIEW, ORDER_STATUS.CANCELLED],
     [ORDER_STATUS.CREDIT_REVIEW]: [ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.CANCELLED],
@@ -59,7 +61,7 @@
   }
 
   window.APServiceCore = Object.freeze({
-    version: 'four-client-contract-v1',
+    version: 'four-client-contract-v2',
     contracts: { orderStatus: ORDER_STATUS, media: MEDIA_POLICY },
     order: { canTransition },
     media: { validateImageFile }

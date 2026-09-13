@@ -27,11 +27,12 @@ type LocalOrder = {
 type OrderItemInput = { id?: unknown; item_id?: unknown; name?: unknown; emoji?: unknown; unit_price?: unknown; quantity?: unknown; options?: unknown }
 
 const ORDER_STATUS = Object.freeze({
-  PAYMENT_REVIEW: 'รอตรวจสอบการชำระเงิน', PAYMENT_RETRY: 'ต้องแนบสลิปใหม่', CREDIT_REVIEW: 'รอตรวจสอบเครดิต',
+  ADMIN_REVIEW: 'รอแอดมินตรวจสอบ', PAYMENT_REVIEW: 'รอตรวจสอบการชำระเงิน', PAYMENT_RETRY: 'ต้องแนบสลิปใหม่', CREDIT_REVIEW: 'รอตรวจสอบเครดิต',
   STORE_ACCEPTED: 'ร้านค้ารับออร์เดอร์', PREPARING: 'กำลังเตรียมสินค้า', RIDER_PICKUP: 'ไรเดอร์กำลังไปรับ',
   ARRIVED_STORE: 'ถึงร้านค้า', COLLECTED: 'รับสินค้าแล้ว', DELIVERING: 'กำลังไปส่ง', COMPLETED: 'สำเร็จแล้ว', CANCELLED: 'ยกเลิก',
 })
 const ORDER_TRANSITIONS: Record<string, string[]> = {
+  [ORDER_STATUS.ADMIN_REVIEW]: [ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.CANCELLED],
   [ORDER_STATUS.PAYMENT_REVIEW]: [ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.PAYMENT_RETRY, ORDER_STATUS.CANCELLED],
   [ORDER_STATUS.PAYMENT_RETRY]: [ORDER_STATUS.PAYMENT_REVIEW, ORDER_STATUS.CANCELLED],
   [ORDER_STATUS.CREDIT_REVIEW]: [ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.CANCELLED],
@@ -44,7 +45,7 @@ const ORDER_TRANSITIONS: Record<string, string[]> = {
   [ORDER_STATUS.COMPLETED]: [], [ORDER_STATUS.CANCELLED]: [],
 }
 const TERMINAL_ORDER_STATUSES = new Set([ORDER_STATUS.COMPLETED, ORDER_STATUS.CANCELLED])
-const EDITABLE_ORDER_STATUSES = new Set([ORDER_STATUS.PAYMENT_REVIEW, ORDER_STATUS.PAYMENT_RETRY, ORDER_STATUS.CREDIT_REVIEW, ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.PREPARING])
+const EDITABLE_ORDER_STATUSES = new Set([ORDER_STATUS.PAYMENT_REVIEW, ORDER_STATUS.PAYMENT_RETRY, ORDER_STATUS.CREDIT_REVIEW, ORDER_STATUS.ADMIN_REVIEW, ORDER_STATUS.STORE_ACCEPTED, ORDER_STATUS.PREPARING])
 
 const json = (body: Record<string, unknown>, status = 200) => new Response(JSON.stringify(body), { status, headers: corsHeaders })
 const isRole = (value: unknown): value is Role => value === 'rider' || value === 'store_owner'
