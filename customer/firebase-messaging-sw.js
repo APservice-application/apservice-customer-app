@@ -3,7 +3,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
-const PUSH_FIREBASE_CONFIG = null; // { apiKey, authDomain, projectId, messagingSenderId, appId }
+const PUSH_FIREBASE_CONFIG = { apiKey: 'AIzaSyCfHiF7jEbwGX1wf8aVMbjS7oxZBlyJgiM', authDomain: 'ap-service-2addf.firebaseapp.com', projectId: 'ap-service-2addf', storageBucket: 'ap-service-2addf.firebasestorage.app', messagingSenderId: '295638354458', appId: '1:295638354458:web:3ff55dcf3ae561aba31fa3' };
 
 if (PUSH_FIREBASE_CONFIG) {
   firebase.initializeApp(PUSH_FIREBASE_CONFIG);

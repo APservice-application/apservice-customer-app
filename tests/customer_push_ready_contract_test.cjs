@@ -8,8 +8,8 @@ const sw = fs.readFileSync('customer/firebase-messaging-sw.js', 'utf8');
 const boot = fs.readFileSync('customer/customer-app.js', 'utf8');
 
 assert.match(config, new RegExp(`app: '${app}'`), 'push config ต้องระบุชื่อแอป');
-assert.match(config, /firebase: null/, 'ก่อนได้ config ต้องเป็น null');
-assert.match(config, /vapidKey: null/, 'ก่อนได้ VAPID key ต้องเป็น null');
+assert.match(config, /projectId: 'ap-service-2addf'/, 'push config ต้องมี firebase project จริง');
+assert.match(config, /vapidKey: 'B[A-Za-z0-9_-]{80,}'/, 'VAPID key ต้องเป็นค่าจริง');
 assert.match(lib, /no-config/, 'ไม่มี config ต้องจบเงียบ');
 assert.match(lib, /firebase-messaging-compat\.js/, 'ต้องโหลด FCM SDK แบบ lazy');
 assert.match(lib, /firebase-messaging-sw\.js/, 'ต้องลงทะเบียน service worker');
