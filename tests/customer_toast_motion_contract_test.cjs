@@ -16,4 +16,11 @@ assert.match(runtime, /setTimeout\(close, duration\)/, 'ไม่จิ้มต
 assert.match(runtime, /is-leaving/, 'รันไทม์ต้องสั่งเล่นอนิเมชันขาออกก่อนซ่อน');
 assert.match(app, /setTimeout\(\(\) => location\.assign\(`orders\.html\?group=/, 'สั่งสำเร็จต้องโชว์แจ้งเตือนก่อนพาไปหน้าออร์เดอร์');
 
+assert.match(css, /\.mpa-toast\{position:fixed;z-index:2147483647;inset:0;margin:auto/, 'โทสต์ต้องอยู่กลางจอเลเยอร์หน้าสุดเหนือทุกอย่าง');
+assert.match(css, /\.mpa-toast\.error\{background:linear-gradient\(145deg,#9f3041/, 'ผิดพลาดต้องเป็นสีแดง');
+assert.match(css, /\.mpa-toast\.warning\{background:linear-gradient\(145deg,#96630b/, 'เตือนต้องเป็นสีส้ม');
+assert.match(css, /mpa-toast-sheen/, 'ลูกค้าต้องมีแสงวิบวับกวาดผ่านการ์ด');
+assert.match(css, /mpa-toast-icon-bloom/, 'ไอคอนต้องมีอนิเมชันบานแบบของลูกค้า');
+assert.match(runtime, /void host\.offsetWidth/, 'แจ้งเตือนซ้ำต้องรีสตาร์ทอนิเมชัน');
+
 console.log('customer toast motion contract: PASS');
