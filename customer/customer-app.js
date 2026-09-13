@@ -10,6 +10,25 @@
   if (!document.getElementById('customer-modern-theme-style')) document.head.insertAdjacentHTML('beforeend', '<link id="customer-modern-theme-style" rel="stylesheet" href="customer-modern-theme.css?v=customer-soft-art-v3">');
   if (!document.getElementById('customer-unified-theme-style')) document.head.insertAdjacentHTML('beforeend', '<link id="customer-unified-theme-style" rel="stylesheet" href="customer-unified-theme.css?v=customer-unified-v2-marketplace-card">');
   if (!document.getElementById('customer-location-consent-script')) document.head.insertAdjacentHTML('beforeend', '<script id="customer-location-consent-script" src="customer-location-consent.js?v=location-consent-v1"><\/script>');
+  const ensurePushScripts = onReady => {
+    if (window.APPush) { onReady(); return; }
+    if (document.getElementById('customer-push-script')) return;
+    const config = document.createElement('script');
+    config.src = '../shared/ap-push-config.js?v=push-v1';
+    config.onload = () => {
+      const lib = document.createElement('script');
+      lib.id = 'customer-push-script'; lib.src = '../shared/ap-push.js?v=push-v1';
+      lib.onload = onReady; lib.onerror = () => {};
+      document.head.appendChild(lib);
+    };
+    config.onerror = () => {};
+    document.head.appendChild(config);
+  };
+  const bootPush = () => ensurePushScripts(() => { try {
+    window.APPush?.init({ request: (path, options) => M.request(path, options), currentUser: () => M.auth.currentUser(), notify: (title, body) => M.ui.setNotice(`${title} · ${body}`, 'info') });
+  } catch (_) {} });
+  if (window.APServiceCustomerSessionBootstrap?.status === 'RESTORED') bootPush();
+  else addEventListener('apservice:customer-session-ready', event => { if (event.detail?.session) bootPush(); }, { once: true });
   const pageScope = name => { const scope = M.network.createScope(name); addEventListener('pagehide', () => scope.dispose(), { once: true }); return scope; };
   const CUSTOMER_ACTIVITY_KEY = 'apservice_customer_last_active_v1';
   const CUSTOMER_REAUTH_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
