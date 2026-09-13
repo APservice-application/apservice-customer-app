@@ -30,12 +30,13 @@
     setStatus('กำลังส่งลิงก์ยืนยันไปที่อีเมลของคุณ…', 'loading');
     try {
       await M.auth.sendMagicLink(email, callback.href);
+      M.ui.cooldownSubmit(submit, 60);
       setStatus('ส่งลิงก์แล้ว กรุณาเปิดอีเมลล่าสุดแล้วกด Verify เพื่อกลับมาเริ่มใช้งาน', 'success');
     } catch (error) {
       const raw = String(error?.message || error || '').toLowerCase();
       const message = /redirect|url/.test(raw) ? 'ระบบยังไม่อนุญาตปลายทางของลิงก์ยืนยัน กรุณาติดต่อผู้ดูแลระบบ' : /rate|too many/.test(raw) ? 'ส่งลิงก์บ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่' : 'ยังส่งลิงก์ไม่ได้ กรุณาตรวจสอบอีเมลและการเชื่อมต่อแล้วลองใหม่';
       setStatus(message, 'error');
-      submit.disabled = false;
+      if (/rate|too many/.test(raw)) M.ui.cooldownSubmit(submit, 60); else submit.disabled = false;
     }
   });
 })();

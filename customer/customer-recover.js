@@ -37,14 +37,17 @@
     try {
       const redirectTo = recoveryRedirectUrl();
       await M.auth.sendPasswordRecovery(email, redirectTo);
+      M.ui.cooldownSubmit(submit, 60);
       status.textContent = 'หากอีเมลนี้มีบัญชีอยู่ ระบบได้ส่งลิงก์ตั้งรหัสผ่านใหม่ให้แล้ว กรุณาตรวจ Inbox และ Spam.';
       status.dataset.kind = 'success';
     } catch (error) {
       const detail = String(error?.message || '');
-      status.textContent = /redirect|url/i.test(detail) ? 'ยังตั้งค่าปลายทางอีเมลไม่สมบูรณ์ กรุณาลองใหม่ภายหลังหรือติดต่อผู้ดูแล' : 'ยังส่งคำขอไม่ได้ กรุณาตรวจสอบการเชื่อมต่อแล้วลองใหม่';
+      const rateLimited = /too many|rate limit/i.test(detail);
+      status.textContent = /redirect|url/i.test(detail) ? 'ยังตั้งค่าปลายทางอีเมลไม่สมบูรณ์ กรุณาลองใหม่ภายหลังหรือติดต่อผู้ดูแล' : rateLimited ? 'ส่งคำขอบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่' : 'ยังส่งคำขอไม่ได้ กรุณาตรวจสอบการเชื่อมต่อแล้วลองใหม่';
       status.dataset.kind = 'error';
+      if (rateLimited) { M.ui.cooldownSubmit(submit, 60); return; }
     } finally {
-      submit.disabled = false;
+      if (!submit.disabled || submit.textContent.indexOf('ส่งอีกครั้งใน') !== 0) submit.disabled = false;
     }
   });
 })();
