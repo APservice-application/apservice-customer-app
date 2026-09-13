@@ -402,6 +402,7 @@
     if (!user) { $('#orderDetail').innerHTML = `${backLink}<div class="mpa-state"><p>กรุณาเข้าสู่ระบบด้วยบัญชีลูกค้าเพื่อดูออร์เดอร์ของคุณ</p>${customerAuthActions(`order.html?id=${id}`)}</div>`; return; }
 
     const scope = pageScope(`customer:order:${id}`);
+    try { window.APOrderChat?.mount({ M, orderId: id, selfRole: 'customer', userId: user.id, target: '#orderDetail', position: 'after' }); } catch (_) {}
     const formatDate = value => { if (!value) return '-'; const date = new Date(value); return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }); };
     const etaText = value => { const date = new Date(value); if (!value || Number.isNaN(date.getTime())) return 'กำลังคำนวณเวลาถึง'; const minutes = Math.max(0, Math.round((date.getTime() - Date.now()) / 60000)); return minutes < 60 ? `ประมาณ ${minutes} นาที` : `ประมาณ ${Math.floor(minutes / 60)} ชม. ${minutes % 60} นาที`; };
     const normalize = value => String(value || '').trim().toLowerCase();
