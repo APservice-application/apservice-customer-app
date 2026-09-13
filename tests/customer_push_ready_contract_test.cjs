@@ -19,4 +19,7 @@ assert.match(sw, /PUSH_FIREBASE_CONFIG/, 'SW ต้องมีจุดใส�
 assert.match(sw, /onBackgroundMessage/, 'SW ต้องรองรับ background message');
 assert.match(boot, /APPush\?\.init/, 'แอปต้องเรียก APPush.init หลังล็อกอิน');
 
+assert.match(boot, /id="enablePush"/, 'หน้าแจ้งเตือนต้องมีปุ่มเปิด push');
+assert.match(boot, /requestPermission\(\{ request/, 'ปุ่มต้องเรียก requestPermission พร้อมบันทึก token');
+
 console.log('customer push ready contract: PASS');
